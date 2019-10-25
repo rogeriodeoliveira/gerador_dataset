@@ -1,103 +1,52 @@
-""" import re
-
-f = open("*.txt", "r")
-fr = re.sub('Subject:.*\n.*.*\n.*\n.*\n.*Reply-to:.*','', f.read())
-print(fr) """
-
-
-#import necessary modules
-""" import csv
-import re
-from csv import DictReader
-
-with open('messages.csv','rt')as f:
-  data = DictReader(f)
-
-
-  for row in data:
-        print(row)  """
-
-""" import mailbox
-import email.utils
-
-mbox = mailbox.mbox('mail.mbox')
-for message in mbox:
-    print (message['Content-Type']) """
-
-"""
-import mailbox
-
- def showMbox(mboxPath):
-    box = mailbox.mbox(mboxPath)
-    for msg in box:
-        print (msg['Subject'])
-        
-        showPayload(msg)
-
-        print('')
-        print ('**********************************')
-        print ('')
-
-
-def showPayload(msg):
-    payload = msg.get_payload()
-
-    if msg.is_multipart():
-        div = ''
-        for subMsg in payload:
-            print (showPayload(subMsg))
-    else:
-        print (msg.get_content_type())
-        print (payload[:200])
-
-
-if __name__ == '__main__':
-    showMbox('mail.mbox') """
-
-
 import os
 import re
 import csv
 
-def rename_files(): 
-    i = 0
-      
-    for filename in os.listdir("emails/"): 
-        dst ="mensagen" + str(i) + ".txt"
-        src ='emails/'+ filename 
-        dst ='emails/'+ dst 
-          
-        # rename() function will 
-        # rename all the files 
-        os.rename(src, dst) 
-        i += 1
+from pathlib import Path
 
-def list_files ():
+def gera_dataset ():
+    # nome das colunas para setar no cvs
     csv_columns = ['conteudo','fraude']
-    dict_emails = {'conteudo':'', 'fraude': 0}
-    from pathlib import Path
 
-    # List all files in directory using pathlib
-    basepath = Path('emails/')
-    files_in_basepath = (entry for entry in basepath.iterdir() if entry.is_file())
-    #data_file = open('dataset.txt', 'w')
+    #dicionário contento as chaves e valores que farão parter do csv
+    dict_emails = {'conteudo':'', 'fraude': 0}
+
+    # Lista todos os arquivos no diretóro usando o pathlib
+    basepath = Path('emails/') # Diretório dos arquivos
+
+    # Retorna a lista de arquivos
+    files_in_basepath = (file for file in basepath.iterdir() if file.is_file())
+    
+    # Abre/cria o arquivo dataset em modo escrita
     data_file = open('dataset.csv', 'w')
+
+    # Percorre a lista de arquivos
     for item in files_in_basepath:
         
-        print(item.name)
+        #Pega o caminho e o nome de cada aquivo
         arquivo = 'emails/' + item.name
+        print('Lendo arquivo' + arquivo)
+        
+        # Abre o arquivo atual
         f = open(arquivo)
+
+        # Lê o arquivo atual e 
+        # remove o cabeçalho que não será utilizado
+        # pegando somemente o conteudo
         fr = re.sub('.*:.*','', f.read())
+
+        # seta os valores (as mensagens) no campo conteudo 
         dict_emails['conteudo'] = fr
 
+        # prepara o csv para receber os valores do dicionario
+        # com o nome das colunas
         writer = csv.DictWriter(data_file, fieldnames=csv_columns)
         writer.writeheader()
 
+        # escreve no arquivo dataset.csv com os dados do dicionário
         writer.writerow(dict_emails)
-        
+    # fecha o arquivo dataset.csv    
     data_file.close()
 
-    
 
-#rename_files()
-list_files()
+gera_dataset()
