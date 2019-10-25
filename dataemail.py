@@ -20,6 +20,11 @@ def gera_dataset ():
     # Abre/cria o arquivo dataset em modo escrita
     data_file = open('dataset.csv', 'w')
 
+    # prepara o csv para receber os valores do dicionario
+    # com o nome das colunas
+    writer = csv.DictWriter(data_file, fieldnames=csv_columns)
+    writer.writeheader()
+
     # Percorre a lista de arquivos
     for item in files_in_basepath:
         
@@ -38,10 +43,7 @@ def gera_dataset ():
         # seta os valores (as mensagens) no campo conteudo 
         dict_emails['conteudo'] = fr
 
-        # prepara o csv para receber os valores do dicionario
-        # com o nome das colunas
-        writer = csv.DictWriter(data_file, fieldnames=csv_columns)
-        writer.writeheader()
+
 
         # escreve no arquivo dataset.csv com os dados do dicionário
         writer.writerow(dict_emails)
