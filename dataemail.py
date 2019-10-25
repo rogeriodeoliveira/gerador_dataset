@@ -57,6 +57,7 @@ if __name__ == '__main__':
 
 import os
 import re
+import csv
 
 def rename_files(): 
     i = 0
@@ -72,22 +73,27 @@ def rename_files():
         i += 1
 
 def list_files ():
-    array_emails ={}
+    csv_columns = ['conteudo','fraude']
+    dict_emails = {'conteudo':'', 'fraude': 0}
     from pathlib import Path
 
     # List all files in directory using pathlib
     basepath = Path('emails/')
     files_in_basepath = (entry for entry in basepath.iterdir() if entry.is_file())
-    data_file = open('dataset.txt', 'w')
+    #data_file = open('dataset.txt', 'w')
+    data_file = open('dataset.csv', 'w')
     for item in files_in_basepath:
         
         print(item.name)
         arquivo = 'emails/' + item.name
         f = open(arquivo)
         fr = re.sub('.*:.*','', f.read())
-        array_emails = fr
-        #print (array_emails)
-        data_file.writelines(fr)
+        dict_emails['conteudo'] = fr
+
+        writer = csv.DictWriter(data_file, fieldnames=csv_columns)
+        writer.writeheader()
+
+        writer.writerow(dict_emails)
         
     data_file.close()
 
