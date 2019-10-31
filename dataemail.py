@@ -5,6 +5,7 @@ import csv
 from pathlib import Path
 
 def gera_dataset ():
+
     # nome das colunas para setar no cvs
     csv_columns = ['conteudo','fraude']
 
@@ -18,7 +19,7 @@ def gera_dataset ():
     files_in_basepath = (file for file in basepath.iterdir() if file.is_file())
     
     # Abre/cria o arquivo dataset em modo escrita
-    data_file = open('dataset.csv', 'w')
+    data_file = open('dataset_emails.csv', 'w')
 
     # prepara o csv para receber os valores do dicionario
     # com o nome das colunas
@@ -36,9 +37,15 @@ def gera_dataset ():
         f = open(arquivo)
 
         # Lê o arquivo atual e 
-        # remove o cabeçalho que não será utilizado
         # pegando somemente o conteudo
-        fr = re.sub('.*:.*','', f.read())
+        fr = re.sub('.*:.*','', f.read())  # remove o cabeçalho que não será utilizado
+        
+        fr = re.sub(r'.og[eé]\w*','',fr)    # remove meu 1 nome
+        fr = re.sub(r'.liveira\w*','',fr)   # remove meu 2 nome
+        fr = re.sub(r'.artins\w*','',fr)    # remove meu 3 nome
+        
+        fr = re.sub(r'\S+@\S+','',fr)    # remove qualquer email
+
 
         # seta os valores (as mensagens) no campo conteudo 
         dict_emails['conteudo'] = fr
