@@ -13,6 +13,6 @@ Salve os arquivos exportados (. txt) na pasta emails
 Você deve alterar as linhas 44,45 e 46 do script para remover seus dados (seu nome) dos e-mails
 
 Execute:
-    python3 dataemail.py
+>python3 dataemail.py
 
 O script irá gerar um dataset .cvs
