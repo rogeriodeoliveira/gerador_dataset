@@ -21,7 +21,7 @@ def gera_dataset ():
     # Abre/cria o arquivo dataset em modo escrita
     data_file = open('dataset_emails.csv', 'w')
 
-    # prepara o csv para receber os valores do dicionario
+    # prepara o csv para receber os valores do dicionário
     # com o nome das colunas
     writer = csv.DictWriter(data_file, fieldnames=csv_columns)
     writer.writeheader()
@@ -37,9 +37,10 @@ def gera_dataset ():
         f = open(arquivo)
 
         # Lê o arquivo atual e 
-        # pegando somemente o conteudo
+        # pegando somemente o conteúdo
         fr = re.sub('.*:.*','', f.read())  # remove o cabeçalho que não será utilizado
         
+        # Você deve criar um regex para retirar os seus dados pessoais
         fr = re.sub(r'.og[eé]\w*','',fr)    # remove meu 1 nome
         fr = re.sub(r'.liveira\w*','',fr)   # remove meu 2 nome
         fr = re.sub(r'.artins\w*','',fr)    # remove meu 3 nome
@@ -47,7 +48,7 @@ def gera_dataset ():
         fr = re.sub(r'\S+@\S+','',fr)    # remove qualquer email
 
 
-        # seta os valores (as mensagens) no campo conteudo 
+        # seta os valores (as mensagens) no campo conteúdo 
         dict_emails['conteudo'] = fr
 
 
