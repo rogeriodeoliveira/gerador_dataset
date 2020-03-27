@@ -3,21 +3,23 @@ import re
 import csv
 
 from pathlib import Path
+from langdetect import detect
 
-def gera_dataset ():
+
+def gera_dataset():
 
     # nome das colunas para setar no cvs
-    csv_columns = ['conteudo','fraude']
+    csv_columns = ['conteudo', 'fraude']
 
-    #dicionário contento as chaves e valores que farão parter do csv
-    dict_emails = {'conteudo':'', 'fraude': 0}
+    # dicionário contento as chaves e valores que farão parter do csv
+    dict_emails = {'conteudo': '', 'fraude': 0}
 
     # Lista todos os arquivos no diretóro usando o pathlib
-    basepath = Path('emails/') # Diretório dos arquivos
+    basepath = Path('emails/')  # Diretório dos arquivos
 
     # Retorna a lista de arquivos
     files_in_basepath = (file for file in basepath.iterdir() if file.is_file())
-    
+
     # Abre/cria o arquivo dataset em modo escrita
     data_file = open('dataset_emails.csv', 'w')
 
@@ -26,37 +28,55 @@ def gera_dataset ():
     writer = csv.DictWriter(data_file, fieldnames=csv_columns)
     writer.writeheader()
 
+    count_valido = 0
+    count_descartado = 0
     # Percorre a lista de arquivos
     for item in files_in_basepath:
-        
-        #Pega o caminho e o nome de cada aquivo
+
+        # Pega o caminho e o nome de cada aquivo
         arquivo = 'emails/' + item.name
         print('Lendo arquivo' + arquivo)
-        
+
         # Abre o arquivo atual
         f = open(arquivo)
 
-        # Lê o arquivo atual e 
+        # Lê o arquivo atual e
         # pegando somemente o conteúdo
-        fr = re.sub('.*:.*','', f.read())  # remove o cabeçalho que não será utilizado
-        
-        # Você deve criar um regex para retirar os seus dados pessoais
-        fr = re.sub(r'.og[eé]\w*','',fr)    # remove meu 1 nome
-        fr = re.sub(r'.liveira\w*','',fr)   # remove meu 2 nome
-        fr = re.sub(r'.artins\w*','',fr)    # remove meu 3 nome
-        
-        fr = re.sub(r'\S+@\S+','',fr)    # remove qualquer email
+        # remove o cabeçalho que não será utilizado
+        fr = re.sub('.*:.*', '', f.read())
 
+        try:
+            # Detecta a lingua do texto
+            lang = detect(fr)
 
-        # seta os valores (as mensagens) no campo conteúdo 
-        dict_emails['conteudo'] = fr
+        except:
+            pass
 
+        # Se o texto estiver em português continua o processo
+        if lang == "pt":
+            # Você deve criar um regex para retirar os seus dados pessoais
+            fr = re.sub(r'.og[eé]\w*', '', fr)    # remove meu 1 nome
+            fr = re.sub(r'.liveira\w*', '', fr)   # remove meu 2 nome
+            fr = re.sub(r'.artins\w*', '', fr)    # remove meu 3 nome
 
+            fr = re.sub(r'\S+@\S+', '', fr)    # remove qualquer email
 
-        # escreve no arquivo dataset.csv com os dados do dicionário
-        writer.writerow(dict_emails)
-    # fecha o arquivo dataset.csv    
+            # seta os valores (as mensagens) no campo conteúdo
+            dict_emails['conteudo'] = fr
+
+            # escreve no arquivo dataset.csv com os dados do dicionário
+            writer.writerow(dict_emails)
+            count_valido = count_valido + 1
+
+            # Se o texto não estiver em português o texto é descartado
+        else:
+            count_descartado = count_descartado + 1
+
+    # fecha o arquivo dataset.csv
     data_file.close()
+
+    print("Emails validados: %d   \r" % (count_valido))
+    print("Emails descartados: %d   \r" % (count_descartado))
 
 
 gera_dataset()
